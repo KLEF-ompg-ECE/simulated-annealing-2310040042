@@ -21,18 +21,21 @@ Date Submitted: March 26, 2026
 Open sa_timetable.py and read through it. Then answer these questions.
 
 Q1. What does `count_clashes()` measure? What value means a perfect timetable?
-
-count_clashes() measures the total number of clashes across all students, where a clash occurs when a student has two or more exams assigned to the same time slot. The function iterates through each student's exam schedule and counts how many times a student is double-booked. A value of 0 means a perfect timetable with no scheduling conflicts.
+```
+count_clashes() measures the total number of clashes across all students, where a clash occurs when a student has two exams in the same slot. 0 means a perfect timetable.
+```
 
 Q2. What does `generate_neighbor()` do? How is the new timetable different from the current one?
-
-generate_neighbor() creates a neighboring solution by randomly selecting one exam and reassigning it to a different time slot. The new timetable differs from the current one in exactly one position - one exam's slot assignment is changed while all other exams remain in their original slots. This small perturbation allows the algorithm to explore nearby solutions in the search space.
+```
+generate_neighbor() creates a neighbouring timetable when one randomly selected exam is rescheduled to a different slot; only one exam assignment changes.
+```
 
 Q3. In `run_sa()`, there is this line:
-if delta < 0 or random.random() < math.exp(-delta / T):
+`if delta < 0 or random.random() < math.exp(-delta / T):`
 What does this line decide? Why does SA sometimes accept a worse solution?
-
-This line decides whether to accept the neighboring solution. It always accepts improvements (delta < 0) but also sometimes accepts worse solutions based on a probability that depends on the temperature T. At high temperatures, worse solutions have a higher acceptance probability, allowing the algorithm to escape local minima. As temperature decreases, the algorithm becomes more selective, focusing on better solutions. This trade-off between exploration and exploitation is what makes Simulated Annealing effective.
+```
+This line decides whether to accept the neighbor solution: always accept if it improves (delta < 0), otherwise accept worse solution with probability exp(-delta/T). Worse solutions are accepted to escape local minima during high temperature.
+```
 
 ---
 
@@ -51,6 +54,7 @@ Fill in this table:
 | Did SA reach 0 clashes? (Yes / No) | No |
 
 Copy the printed timetable output here:
+```
 Final Timetable
 ------------------------------------------
   Slot 1:  Geography
@@ -60,10 +64,14 @@ Final Timetable
   Slot 5:  Mathematics, Physics
 ------------------------------------------
   Total clashes: 3
+```
 
 Look at `plots/experiment_1.png` and describe what you see (2–3 sentences).  
 *Where does the biggest drop in clashes happen? Does the curve flatten out?*
-The clash plot shows a steep decline in the first 200-300 iterations where clashes drop from 12 to around 5-6, representing the initial exploration phase. After this rapid improvement, the curve gradually flattens with minor oscillations, indicating that the algorithm is making smaller improvements as it converges. The temperature plot shows a logarithmic decay pattern, gradually cooling over the 1379 iterations.
+```
+The clash plot shows a steep decline in the first 200-300 iterations, then flattens with smaller improvements. Temperature plot decays exponentially over 1379 iterations.
+```
+
 
 ---
 
@@ -82,10 +90,14 @@ Results table:
 | 0.995       | 3             | 1379                 | No                 |
 Compare the three plots. What do you notice about how fast vs slow cooling affects the result? (3–4 sentences)  
 *Hint: Fast cooling = temperature drops quickly. Does it have time to explore well?*
-Fast cooling (0.80) terminates quickly after only 31 iterations with a poor result of 8 clashes, indicating the algorithm converged prematurely without sufficient exploration. Medium cooling (0.95) reaches a good solution (3 clashes) in 135 iterations, achieving a balance between exploration and exploitation. Slow cooling (0.995) takes significantly longer (1379 iterations) but achieves the same final result (3 clashes) as medium cooling. This demonstrates that slower cooling allows more thorough exploration, but beyond a certain point, the improvement plateaus while only increasing computation time.
+```
+Fast cooling (0.80) converges quickly with poor quality. Medium cooling (0.95) gives good quality and efficiency. Slow cooling (0.995) achieves similar quality but needs more iterations.
+```
 
 Which cooling_rate gave the best result? Why do you think that is?
-Both 0.95 and 0.995 gave the same best result of 3 clashes, but 0.95 achieved this in much less time (135 vs 1379 iterations). The 0.95 cooling rate provides better computational efficiency because it maintains enough temperature for exploration while still progressing toward exploitation. Even slower cooling (0.995) doesn't improve the solution further, suggesting that 0.95 is in the practical sweet spot where the algorithm balances thorough search with reasonable computation time.
+```
+0.95 gave the best trade-off in this run because it found a low clash solution faster than 0.995 and better than 0.80.
+```
 
 ---
 
@@ -99,8 +111,9 @@ Complete this table with your best result from each experiment:
 | 2 — Cooling rate | cooling_rate = 0.95 | 3 | Medium cooling rate (0.95) achieves optimal results with significantly faster convergence and better computational efficiency than both faster and slower rates. |
 
 In your own words — what is the most important thing you learned about Simulated Annealing from these experiments? (3–5 sentences)
-The most important lesson is that Simulated Annealing is fundamentally about balance. The cooling rate parameter controls this balance between exploration (searching broadly for good solutions) and exploitation (refining found solutions). A cooling rate that is too fast (0.80) doesn't allow time for exploration and gets stuck in poor local minima. Conversely, an extremely slow cooling rate (0.995) explores thoroughly but wastes computation achieving the same result as a more moderate rate (0.95). The key insight is that there exists an optimal "sweet spot" where you balance these two competing objectives—for this problem, that appears to be around 0.95, where the algorithm reaches good solutions efficiently.
-
+```
+The most important lesson is that Simulated Annealing needs a tuned cooling schedule. Too fast cooling may trap in local minima, and too slow cooling takes too long. A moderate rate around 0.95 gave the best efficiency in these tests.
+```
 ---
 
 ## Submission Checklist
